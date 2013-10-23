@@ -150,8 +150,14 @@ int detect_myth( void )
         memcpy (uc,startbytes,3);
         for (int i=3;i<startbytes_avail;i++)
         {
+            // Files recorded from PVR-x50 tuners have "itv0"
+            // prefixing private data streams that contain VBI data.
+            // Files recorded from the analog side of hybrid Hauppauge tuners
+            // like the HVR-1600 have "ITV0" prefixes.
+            // It's not a MytyTV thing, rather it is done by the linux drivers
+            // that support these tuners.
             if ((uc[0]=='t') && (uc[1]=='v') && (uc[2] == '0') ||
-                (uc[0]=='V') && (uc[1]=='V') && (uc[2] == '0'))
+                (uc[0]=='T') && (uc[1]=='V') && (uc[2] == '0'))
                 vbi_blocks++;
             uc[0]=uc[1];
             uc[1]=uc[2];
