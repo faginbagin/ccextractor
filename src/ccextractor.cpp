@@ -286,6 +286,11 @@ int main(int argc, char *argv[])
         case OF_RCWT:
             extension = ".bin";
             break;
+#ifdef HAVE_LIBPNG
+        case OF_SPUPNG:
+            extension = ".xml";
+#endif
+            break;
 		case OF_NULL:
 			extension = "";
 			break;
@@ -392,6 +397,11 @@ int main(int argc, char *argv[])
 			if (cc_to_stdout && extract==12)			
 				fatal (EXIT_INCOMPATIBLE_PARAMETERS, "You can't extract both fields to stdout at the same time in broadcast mode.");
 			
+#ifdef HAVE_LIBPNG
+                        if (write_format == OF_SPUPNG && cc_to_stdout)
+                                fatal (EXIT_INCOMPATIBLE_PARAMETERS, "You cannot use -out=spupng with -stdout.");
+#endif
+
 			if (extract!=2)
 			{
 				if (cc_to_stdout)
@@ -752,6 +762,12 @@ int main(int argc, char *argv[])
 
     if (wbout1.fh!=-1)
     {
+#ifdef HAVE_LIBPNG
+        if (write_format==OF_SPUPNG)
+        {
+            handle_end_of_data (&wbout1);
+        }
+#endif
         if (write_format==OF_SMPTETT || write_format==OF_SAMI || write_format==OF_SRT || write_format==OF_TRANSCRIPT)
         {
             handle_end_of_data (&wbout1);
@@ -767,6 +783,12 @@ int main(int argc, char *argv[])
     }
     if (wbout2.fh!=-1)
     {
+#ifdef HAVE_LIBPNG
+        if (write_format==OF_SPUPNG)
+        {
+            handle_end_of_data (&wbout2);
+        }
+#endif
         if (write_format==OF_SMPTETT || write_format==OF_SAMI || write_format==OF_SRT || write_format==OF_TRANSCRIPT)
         {
             handle_end_of_data (&wbout2);

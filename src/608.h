@@ -43,6 +43,10 @@ unsigned char cctoupper (unsigned char c);
 int general_608_init (void);
 LLONG get_visible_end (void);
 
+void write_spumux_header(struct s_write* wb);
+void write_spumux_footer(struct s_write* wb);
+int write_cc_buffer_as_spupng (struct eia608_screen* data, struct s_write* wb);
+
 #define CC608_SCREEN_WIDTH  32
 
 #define GUARANTEE(length) if (length>enc_buffer_capacity) \
@@ -71,7 +75,9 @@ enum color_code
     COL_RED = 4,
     COL_YELLOW = 5,
     COL_MAGENTA = 6,
-	COL_USERDEFINED = 7
+    COL_USERDEFINED = 7,
+    COL_BLACK = 8,
+    COL_TRANSPARENT = 9
 };
 
 

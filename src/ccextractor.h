@@ -127,6 +127,9 @@ struct s_write
     struct eia608 *data608;
 	int my_field; // Used for sanity checks
 	long bytes_processed_608; // To be written ONLY by process_608
+#ifdef HAVE_LIBPNG
+    void* spupng_data;
+#endif
 };
 
 enum output_format
@@ -138,6 +141,9 @@ enum output_format
     OF_RCWT = 4,
 	OF_NULL = 5,
 	OF_SMPTETT = 6
+#ifdef HAVE_LIBPNG
+        , OF_SPUPNG = 7
+#endif
 };
 
 enum output_date_format
