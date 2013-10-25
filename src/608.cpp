@@ -992,11 +992,11 @@ void handle_pac (unsigned char c1, unsigned char c2, struct s_write *wb)
             return;
         }
     }
-    int color=pac2_attribs[c2][0];
-    int font=pac2_attribs[c2][1];
+    wb->data608->color=pac2_attribs[c2][0];
+    wb->data608->font=pac2_attribs[c2][1];
     int indent=pac2_attribs[c2][2];
     dbg_print(DMT_608, "  --  Position: %d:%d, color: %s,  font: %s\n",row,
-        indent,color_text[color][0],font_text[font]);
+        indent,color_text[wb->data608->color][0],font_text[wb->data608->font]);
     if (wb->data608->mode!=MODE_TEXT)
     {
         // According to Robson, row info is discarded in text mode
@@ -1083,7 +1083,7 @@ int disCommand (unsigned char hi, unsigned char lo, struct s_write *wb)
 	{
 		/* Duplicate commands are to be ignored, they can be sent twice 
 		   to help with poor reception conditions */ 
-		dbg_print(DMT_608, "Skipping command %02X,%02X, duplicate\n");
+		dbg_print(DMT_608, "Skipping command %02X,%02X duplicate\n", hi, lo);
 		last_command_hi=0;
 		last_command_low=0; 
 		return 0; 		
