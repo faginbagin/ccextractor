@@ -47,6 +47,6 @@ clean:
 ccextractor: $(src_OBJS) $(gpacmp4_OBJS)
 
 .PHONY: install
-install:
+install: ccextractor
 	$(INSTALL_PROGRAM) ccextractor $(bindir)
 
