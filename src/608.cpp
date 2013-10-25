@@ -1100,7 +1100,7 @@ int disCommand (unsigned char hi, unsigned char lo, struct s_write *wb)
 	{
 		/* Duplicate commands are to be ignored, they can be sent twice 
 		   to help with poor reception conditions */ 
-		dbg_print(DMT_608, "Skipping command %02X,%02X, duplicate\n");
+		dbg_print(DMT_608, "Skipping command %02X,%02X duplicate\n", hi, lo);
 		last_command_hi=0;
 		last_command_low=0; 
 		return 0; 		
@@ -1190,7 +1190,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
             if (hi==0 && lo==0) // Just padding
                 continue;
 			
-            // printf ("\r[%02X:%02X]\n",hi,lo);
+            //dbg_print(DMT_608, "\r[\\x%02X\\x%02X]\n",hi,lo);
 
 			if (hi>=0x01 && hi<=0x0E && (wb==NULL || wb->my_field==2)) // XDS can only exist in field 2.
             {
@@ -1200,6 +1200,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
 				{
 					ts_start_of_xds=get_fts();
 					in_xds_mode=1;
+                    dbg_print(DMT_XDS, "\rBegin XDS: %02X %02X\n", hi, lo);
 				}
             }
             if (hi==0x0F && in_xds_mode && (wb==NULL || wb->my_field==2)) // End of XDS block
@@ -1208,6 +1209,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
 				do_end_of_xds (lo);
 				if (wb) 
 					wb->data608->channel=new_channel; // Switch from channel 3
+                dbg_print(DMT_XDS, "\rEnd XDS: %02X %02X channel=%d\n", hi, lo, new_channel);
                 continue;
             }
             if (hi>=0x10 && hi<0x1F) // Non-character code or special/extended char
@@ -1222,7 +1224,10 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
                     textprinted = 0;
                 }
 				if (!wb || wb->my_field==2)
+                {
+                    dbg_print(DMT_XDS, "\rEnd XDS: %02X %02X channel=%d new=%d\n", hi, lo,  (wb ? wb->data608->channel : -1), new_channel);
 					in_xds_mode=0; // Back to normal (CEA 608-8.6.2)
+                }
 				if (!wb) // Not XDS and we don't have a writebuffer, nothing else would have an effect
 					continue; 
 				if (wb->data608->last_c1==hi && wb->data608->last_c2==lo)
