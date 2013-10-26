@@ -37,6 +37,41 @@ gpacmp4_OBJS = \
 	odf_code.o odf_codec.o odf_command.o os_divers.o qos.o sample_descs.o \
 	slc.o stbl_read.o stbl_write.o track.o tx3g.o url.o utf.o
 
+src_SRC = \
+	../src/608.cpp ../src/608_helpers.cpp ../src/608_sami.cpp \
+	../src/608_smptett.cpp ../src/608_spupng.cpp ../src/608_srt.cpp \
+	../src/708.cpp ../src/708_encoding.cpp ../src/activity.cpp \
+	../src/asf_functions.cpp ../src/avc_functions.cpp ../src/cc_bitstream.cpp \
+	../src/cc_decoders_common.cpp ../src/ccextractor.cpp ../src/constants.cpp \
+	../src/encoding.cpp ../src/es_functions.cpp ../src/es_userdata.cpp \
+	../src/file_functions.cpp ../src/general_loop.cpp ../src/myth.cpp \
+	../src/output.cpp ../src/params.cpp ../src/params_dump.cpp \
+	../src/sequencing.cpp ../src/stream_functions.cpp ../src/telxcc.cpp \
+	../src/timing.cpp ../src/ts_functions.cpp ../src/utility.cpp ../src/xds.cpp
+
+gpacmp4_SRC = \
+	../src/gpacmp4/avc_ext.c ../src/gpacmp4/avilib.c \
+	../src/gpacmp4/av_parsers.c ../src/gpacmp4/base_encoding.c \
+	../src/gpacmp4/bitstream.c ../src/gpacmp4/box_code_3gpp.c \
+	../src/gpacmp4/box_code_apple.c ../src/gpacmp4/box_code_base.c \
+	../src/gpacmp4/box_code_isma.c ../src/gpacmp4/box_code_meta.c \
+	../src/gpacmp4/box_funcs.c ../src/gpacmp4/data_map.c \
+	../src/gpacmp4/desc_private.c ../src/gpacmp4/descriptors.c \
+	../src/gpacmp4/error.c ../src/gpacmp4/gpac_ogg.c \
+	../src/gpacmp4/hinting.c ../src/gpacmp4/ipmpx_code.c \
+	../src/gpacmp4/ipmpx_parse.c ../src/gpacmp4/isom_intern.c \
+	../src/gpacmp4/isom_read.c ../src/gpacmp4/isom_store.c \
+	../src/gpacmp4/isom_write.c ../src/gpacmp4/list.c \
+	../src/gpacmp4/media.c ../src/gpacmp4/media_odf.c \
+	../src/gpacmp4/meta.c ../src/gpacmp4/movie_fragments.c \
+	../src/gpacmp4/mp4.cpp ../src/gpacmp4/odf_code.c \
+	../src/gpacmp4/odf_codec.c ../src/gpacmp4/odf_command.c \
+	../src/gpacmp4/os_divers.c ../src/gpacmp4/qos.c \
+	../src/gpacmp4/sample_descs.c ../src/gpacmp4/slc.c \
+	../src/gpacmp4/stbl_read.c ../src/gpacmp4/stbl_write.c \
+	../src/gpacmp4/track.c ../src/gpacmp4/tx3g.c \
+	../src/gpacmp4/url.c ../src/gpacmp4/utf.c
+
 .PHONY: all
 all: ccextractor
 
@@ -50,3 +85,7 @@ ccextractor: $(src_OBJS) $(gpacmp4_OBJS)
 install: ccextractor
 	$(INSTALL_PROGRAM) ccextractor $(bindir)
 
+depend:
+	$(CXX) $(CXXFLAGS) -E -MM $(src_SRC) $(gpacmp4_SRC) > depend
+
+include depend
