@@ -231,8 +231,10 @@ void handle_text_attr (const unsigned char c1, const unsigned char c2, struct s_
         dbg_print(DMT_608, "  --  Color: %s,  font: %s\n",
             color_text[wb->data608->color][0],
             font_text[wb->data608->font]);
-        if (wb->data608->cursor_column<31)
-            wb->data608->cursor_column++;
+        // Mid-row codes should put a non-transparent space at the current position
+        // and advance the cursor
+        //so use write_char
+        write_char(0x20, wb);
     }
 }
 
