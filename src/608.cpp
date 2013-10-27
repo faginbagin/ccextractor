@@ -14,7 +14,8 @@ unsigned char str[2048]; // Another generic general purpose buffer
 unsigned enc_buffer_used;
 unsigned enc_buffer_capacity;
 
-unsigned int last_command_hi=0, last_command_low=0;
+// See how wb->data608->last_c1 and wb->data608->last_c2 are used.
+// unsigned int last_command_hi=0, last_command_low=0;
 
 LLONG minimum_fts=0; // No screen should start before this FTS
 
@@ -1098,6 +1099,12 @@ int check_channel (unsigned char c1, struct s_write *wb)
 * Returns 1 if something was written to screen, 0 otherwise */
 int disCommand (unsigned char hi, unsigned char lo, struct s_write *wb)
 {
+#if 0
+    // This code seems to be redundant and wrong
+    // Redundant because there are similar tests outside this function
+    // that use wb->data608->last_c1 and wb->data608->last_c2
+    // Wrong because, unlike last_c1 and last_c2, last_command_hi/low
+    // aren't cleared when a character (not a command) is received.
 	if (hi==last_command_hi && lo==last_command_low)
 	{
 		/* Duplicate commands are to be ignored, they can be sent twice 
@@ -1109,6 +1116,7 @@ int disCommand (unsigned char hi, unsigned char lo, struct s_write *wb)
 	}
 	last_command_hi=hi;
 	last_command_low=lo;
+#endif
 
     int wrote_to_screen=0;
 
@@ -1192,7 +1200,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
             if (hi==0 && lo==0) // Just padding
                 continue;
 			
-            //dbg_print(DMT_608, "\r[\\x%02X\\x%02X]\n",hi,lo);
+            // dbg_print(DMT_608, "\r[%02X,%02X] field=%d channel=%d\n", hi, lo, wb ? wb->my_field : -1, wb ? wb->data608->channel : -1);
 
 			if (hi>=0x01 && hi<=0x0E && (wb==NULL || wb->my_field==2)) // XDS can only exist in field 2.
             {
@@ -1236,6 +1244,10 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
 				{
 					// Duplicate dual code, discard. Correct to do it only in
 					// non-XDS, XDS codes shall not be repeated.
+                    dbg_print(DMT_608, "Skipping command %02X,%02X Duplicate\n", hi, lo);
+                    // Ignore only the first repetition
+                    wb->data608->last_c1=-1;
+                    wb->data608->last_c2=-1;
 					continue;
 				}
 				wb->data608->last_c1=hi;
