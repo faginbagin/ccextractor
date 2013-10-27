@@ -103,6 +103,8 @@ void
 SpuPng::writeHeader()
 {
     fprintf(fpxml, "<subpictures>\n<stream>\n");
+    if (num_input_files > 0)
+        fprintf(fpxml, "<!-- %s -->\n", inputfile[0]);
 }
 
 void
