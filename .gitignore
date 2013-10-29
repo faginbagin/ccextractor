@@ -13,3 +13,4 @@
 *.a
 
 linux/ccextractor
+linux/depend
