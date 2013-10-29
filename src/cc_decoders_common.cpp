@@ -8,9 +8,10 @@ made to reuse, not duplicate, as many functions as possible */
 LLONG get_visible_start (void)
 {
 	LLONG fts = get_fts();
-	if (fts>minimum_fts)
-		return fts;
-	return minimum_fts+1;
+	if (fts <= minimum_fts)
+		fts = minimum_fts+1;
+    dbg_print(DMT_608, "Visible Start time=%s\n", print_mstime(fts));
+    return fts;
 }
 
 /* This function returns the current FTS and saves it so it can be used by get_visible_start */
@@ -19,5 +20,6 @@ LLONG get_visible_end (void)
 	LLONG fts = get_fts();
 	if (fts>minimum_fts)
 		minimum_fts=fts;
+    dbg_print(DMT_608, "Visible End time=%s\n", print_mstime(fts));
 	return fts;
 }
