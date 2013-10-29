@@ -78,6 +78,7 @@ const char *command_type[] =
 	"AOF - Not Used (Alarm Off)",
 	"AON - Not Used (Alarm On)",
 	"DER - Delete to End of Row",
+    "RDC - Resume Direct Captioning",
 	"RU1 - Fake Roll up 1 rows"
 };
 
@@ -201,7 +202,15 @@ void write_char (const unsigned char c, struct s_write *wb)
         use_buffer->colors[wb->data608->cursor_row][wb->data608->cursor_column]=wb->data608->color;
         use_buffer->fonts[wb->data608->cursor_row][wb->data608->cursor_column]=wb->data608->font;	
         use_buffer->row_used[wb->data608->cursor_row]=1;
+
+        if (use_buffer->empty)
+        {
+            struct eia608_screen *get_current_visible_buffer (struct s_write *wb);
+            if (get_current_visible_buffer(wb) == use_buffer)
+                wb->data608->current_visible_start_ms=get_visible_start();
+        }
         use_buffer->empty=0;
+
         if (wb->data608->cursor_column<31)
             wb->data608->cursor_column++;
 		if (wb->data608->ts_start_of_current_line == -1) 
