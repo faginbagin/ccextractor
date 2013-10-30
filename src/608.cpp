@@ -639,6 +639,12 @@ int roll_up(struct s_write *wb)
     if (rows_now>keep_lines)
         mprint ("Bug in roll_up, should have %d lines but I have %d.\n",
             keep_lines, rows_now);
+
+    // If the buffer is now empty, let's set the flag
+    // This will allow write_char to set visible start time appropriately
+    if (0 == rows_now)
+        use_buffer->empty = 1;
+
 	return (rows_now != rows_orig);
 }
 
