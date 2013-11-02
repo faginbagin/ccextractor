@@ -171,6 +171,25 @@ SpuPng::writeCCBuffer(struct eia608_screen* data, struct s_write *wb)
         if (data->row_used[i])
         {
             int len = get_decoder_line_encoded(subline, i, data);
+            // Check for characters that spumux won't parse
+            // null chars will be changed to space
+            // pairs of dashes will be changed to underscores
+            for (unsigned char* ptr = subline; ptr < subline+len; ptr++)
+            {
+                switch (*ptr)
+                {
+                    case 0:
+                        *ptr = ' ';
+                        break;
+                    case '-':
+                        if (*(ptr+1) == '-')
+                        {
+                            *ptr++ = '_';
+                            *ptr = '_';
+                        }
+                        break;
+                }
+            }
             fprintf(fpxml, "%s\n", subline);
             dbg_print(DMT_608, "%s\n", subline);
         }
