@@ -99,7 +99,7 @@ int ts_readpacket(void)
     {
         if (printtsprob)
         {
-            mprint ("\nProblem: No TS header mark. Received bytes:\n");
+            mprint ("\nProblem: No TS header mark (filepos=%lld). Received bytes:\n", past);
             dump (DMT_GENERIC_NOTICES, tspacket,4, 0, 0);
 
             mprint ("Skip forward to the next TS header mark.\n");
@@ -154,7 +154,7 @@ int ts_readpacket(void)
 
     if (transport_error_indicator)
     {
-        mprint ("Warning: Defective (error indicator on) TS packet:\n");
+        mprint ("Warning: Defective (error indicator on) TS packet (filepos=%lld):\n", past);
         dump (DMT_GENERIC_NOTICES, tspacket, 188, 0, 0);
     }
 

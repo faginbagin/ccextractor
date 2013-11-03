@@ -180,7 +180,7 @@ unsigned get_decoder_line_encoded (unsigned char *buffer, int line_num, struct e
         int its_col = data->colors[line_num][i];
         if (its_col != col  && !nofontcolor)
         {
-            if (col!=COL_WHITE) // We need to close the previous font tag
+            if (col!=COL_WHITE && col < COL_BLACK) // We need to close the previous font tag
             {
                 buffer+= encode_line (buffer,(unsigned char *) "</font>");
             }
@@ -243,7 +243,7 @@ unsigned get_decoder_line_encoded (unsigned char *buffer, int line_num, struct e
     {
         buffer+=encode_line (buffer, (unsigned char *) "</u>");
     }
-    if (col != COL_WHITE && !nofontcolor)
+    if (col != COL_WHITE && col < COL_BLACK && !nofontcolor)
     {
         buffer+=encode_line (buffer, (unsigned char *) "</font>");
     }
@@ -260,7 +260,7 @@ void delete_all_lines_but_current (struct eia608_screen *data, int row)
         {
             memset(data->characters[i],' ',CC608_SCREEN_WIDTH);
             data->characters[i][CC608_SCREEN_WIDTH]=0;		
-            memset (data->colors[i],default_color,CC608_SCREEN_WIDTH+1); 
+            memset (data->colors[i],COL_TRANSPARENT,CC608_SCREEN_WIDTH+1); 
             memset (data->fonts[i],FONT_REGULAR,CC608_SCREEN_WIDTH+1); 
             data->row_used[i]=0;        
         }

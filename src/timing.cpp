@@ -47,7 +47,7 @@ void set_fts(void)
         if (dif < -0.2 || dif >=5 )
         {
             // ATSC specs: More than 3501 ms means missing component
-            mprint ("\nWarning: Reference clock has changed abruptly (%d seconds), attempting to synchronize\n", (int) dif);
+            mprint ("\nWarning: Reference clock has changed abruptly (%d seconds filepos=%lld), attempting to synchronize\n", (int) dif, past);
             mprint ("Last sync PTS value: %lld\n",sync_pts);
             mprint ("Current PTS value: %lld\n",current_pts);
             pts_jump = 1;

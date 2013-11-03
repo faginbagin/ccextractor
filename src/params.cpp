@@ -285,6 +285,10 @@ void set_output_format (const char *format)
         write_format=OF_RAW;
         rawmode=1;
     }
+#ifdef HAVE_LIBPNG
+    else if (strcmp (format,"spupng")==0)
+        write_format=OF_SPUPNG;
+#endif
     else
         fatal (EXIT_MALFORMED_PARAMETER, "Unknown output file format: %s\n", format);
 }
@@ -330,7 +334,7 @@ void usage (void)
     mprint ("            inputfile: file(s) to process\n");
     mprint ("    -o outputfilename: Use -o parameters to define output filename if you don't\n");
     mprint ("                       like the default ones (same as infile plus _1 or _2 when\n");
-    mprint ("                       needed and .raw or .srt extension).\n");
+    mprint ("                       needed and file extension, e.g. .srt).\n");
     mprint ("                           -o or -o1 -> Name of the first (maybe only) output\n");
     mprint ("                                        file.\n");
     mprint ("                           -o2       -> Name of the second output file, when\n");
@@ -394,6 +398,11 @@ void usage (void)
     mprint ("                      ttxt    -> Timed Transcript (transcription with time\n");
 	mprint ("                                 info)\n");
 	mprint ("                      smptett -> SMPTE Timed Text (W3C TTML) format.\n");
+#ifdef HAVE_LIBPNG
+        mprint ("                      spupng -> Set of .xml and .png files for use with\n");
+        mprint ("                                dvdauthor's spumux.\n");
+        mprint ("                                See \"Notes on spupng output format\"\n");
+#endif
 	mprint ("                      null    -> Don't produce any file output\n\n");
 	mprint ("       Note: Teletext output can only be srt, txt or ttxt for now.\n\n");
      
@@ -640,6 +649,31 @@ void usage (void)
 	mprint ("won't do anything yet. Feel free to submit samples that cause problems\n");
 	mprint ("and feature requests.\n");
 	mprint ("\n");
+#ifdef HAVE_LIBPNG
+    mprint("Notes on spupng output format:\n");
+    mprint("One .xml file is created per output field. A set of .png files are created in\n");
+    mprint("a directory with the same base name as the corresponding .xml file(s), but with\n");
+    mprint("a .d extension. Each .png file will contain an image representing one caption\n");
+    mprint("and named subNNNN.png, starting with sub0000.png.\n");
+    mprint("For example, the command:\n");
+    mprint("    ccextractor -out=spupng input.mpg\n");
+    mprint("will create the files:\n");
+    mprint("    input.xml\n");
+    mprint("    input.d/sub0000.png\n");
+    mprint("    input.d/sub0001.png\n");
+    mprint("    ...\n");
+    mprint("The command:\n");
+    mprint("    ccextractor -out=spupng -o /tmp/output -12 input.mpg\n");
+    mprint("will create the files:\n");
+    mprint("    /tmp/output_1.xml\n");
+    mprint("    /tmp/output_1.d/sub0000.png\n");
+    mprint("    /tmp/output_1.d/sub0001.png\n");
+    mprint("    ...\n");
+    mprint("    /tmp/output_2.xml\n");
+    mprint("    /tmp/output_2.d/sub0000.png\n");
+    mprint("    /tmp/output_2.d/sub0001.png\n");
+    mprint("    ...\n");
+#endif
 }
 
 void parse_708services (char *s)

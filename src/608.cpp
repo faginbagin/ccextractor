@@ -104,7 +104,9 @@ const char *color_text[][2]=
     {"red","<font color=\"#ff0000\">"},
     {"yellow","<font color=\"#ffff00\">"},
     {"magenta","<font color=\"#ff00ff\">"},
-    {"userdefined","<font color=\""}
+    {"userdefined","<font color=\""},
+    {"black",""},
+    {"transparent",""}
 };
 
 
@@ -114,7 +116,7 @@ void clear_eia608_cc_buffer (struct eia608_screen *data)
     {
         memset(data->characters[i],' ',CC608_SCREEN_WIDTH);
         data->characters[i][CC608_SCREEN_WIDTH]=0;		
-        memset (data->colors[i],default_color,CC608_SCREEN_WIDTH+1); 
+        memset (data->colors[i],COL_TRANSPARENT,CC608_SCREEN_WIDTH+1); 
         memset (data->fonts[i],FONT_REGULAR,CC608_SCREEN_WIDTH+1); 
         data->row_used[i]=0;        
     }
@@ -182,7 +184,7 @@ void delete_to_end_of_row (struct s_write *wb)
 			// TODO: This can change the 'used' situation of a column, so we'd
 			// need to check and correct.
 	        use_buffer->characters[wb->data608->cursor_row][i]=' ';
-			use_buffer->colors[wb->data608->cursor_row][i]=wb->data608->color;
+			use_buffer->colors[wb->data608->cursor_row][i]=COL_TRANSPARENT;
 			use_buffer->fonts[wb->data608->cursor_row][i]=wb->data608->font;	
 		}
 	}
@@ -239,8 +241,10 @@ void handle_text_attr (const unsigned char c1, const unsigned char c2, struct s_
         dbg_print(DMT_608, "  --  Color: %s,  font: %s\n",
             color_text[wb->data608->color][0],
             font_text[wb->data608->font]);
-        if (wb->data608->cursor_column<31)
-            wb->data608->cursor_column++;
+        // Mid-row codes should put a non-transparent space at the current position
+        // and advance the cursor
+        //so use write_char
+        write_char(0x20, wb);
     }
 }
 
@@ -267,6 +271,11 @@ void write_subtitle_file_footer (struct s_write *wb)
 			enc_buffer_used=encode_line (enc_buffer,(unsigned char *) str);
 			write (wb->fh, enc_buffer,enc_buffer_used);
 			break;
+#ifdef HAVE_LIBPNG
+        case OF_SPUPNG:
+            write_spumux_footer(wb);
+            break;
+#endif
 		default: // Nothing to do. Only SAMI has a footer
             break;
     }
@@ -294,6 +303,11 @@ void write_subtitle_file_header (struct s_write *wb)
         case OF_RCWT: // Write header
             write (wb->fh, rcwt_header, sizeof(rcwt_header));
             break;
+#ifdef HAVE_LIBPNG
+        case OF_SPUPNG:
+            write_spumux_header(wb);
+            break;
+#endif
         case OF_TRANSCRIPT: // No header. Fall thru
         default:
             break;
@@ -470,6 +484,11 @@ int write_cc_buffer (struct s_write *wb)
             case OF_TRANSCRIPT:
                 wrote_something = write_cc_buffer_as_transcript (data,wb);
                 break;
+#ifdef HAVE_LIBPNG
+            case OF_SPUPNG:
+                wrote_something = write_cc_buffer_as_spupng (data,wb);
+                break;
+#endif
             default: 
                 break;
         }
@@ -600,13 +619,13 @@ int roll_up(struct s_write *wb)
     for (int j=0;j<(1+wb->data608->cursor_row-keep_lines);j++)
     {
         memset(use_buffer->characters[j],' ',CC608_SCREEN_WIDTH);			
-        memset(use_buffer->colors[j],COL_WHITE,CC608_SCREEN_WIDTH);
+        memset(use_buffer->colors[j],COL_TRANSPARENT,CC608_SCREEN_WIDTH);
         memset(use_buffer->fonts[j],FONT_REGULAR,CC608_SCREEN_WIDTH);
         use_buffer->characters[j][CC608_SCREEN_WIDTH]=0;
         use_buffer->row_used[j]=0;
     }
     memset(use_buffer->characters[lastrow],' ',CC608_SCREEN_WIDTH);
-    memset(use_buffer->colors[lastrow],COL_WHITE,CC608_SCREEN_WIDTH);
+    memset(use_buffer->colors[lastrow],COL_TRANSPARENT,CC608_SCREEN_WIDTH);
     memset(use_buffer->fonts[lastrow],FONT_REGULAR,CC608_SCREEN_WIDTH);
 
     use_buffer->characters[lastrow][CC608_SCREEN_WIDTH]=0;
@@ -1033,7 +1052,7 @@ void handle_pac (unsigned char c1, unsigned char c2, struct s_write *wb)
 			if (use_buffer->row_used[j])
 			{
 				memset(use_buffer->characters[j],' ',CC608_SCREEN_WIDTH);			
-				memset(use_buffer->colors[j],COL_WHITE,CC608_SCREEN_WIDTH);
+				memset(use_buffer->colors[j],COL_TRANSPARENT,CC608_SCREEN_WIDTH);
 				memset(use_buffer->fonts[j],FONT_REGULAR,CC608_SCREEN_WIDTH);
 				use_buffer->characters[j][CC608_SCREEN_WIDTH]=0;
 				use_buffer->row_used[j]=0;
@@ -1196,7 +1215,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
             if (hi==0 && lo==0) // Just padding
                 continue;
 			
-            // printf ("\r[%02X:%02X]\n",hi,lo);
+            // dbg_print(DMT_608, "\r[%02X,%02X] field=%d channel=%d\n", hi, lo, wb ? wb->my_field : -1, wb ? wb->data608->channel : -1);
 
 			if (hi>=0x01 && hi<=0x0E && (wb==NULL || wb->my_field==2)) // XDS can only exist in field 2.
             {
@@ -1206,6 +1225,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
 				{
 					ts_start_of_xds=get_fts();
 					in_xds_mode=1;
+                    dbg_print(DMT_XDS, "\rBegin XDS: %02X %02X\n", hi, lo);
 				}
             }
             if (hi==0x0F && in_xds_mode && (wb==NULL || wb->my_field==2)) // End of XDS block
@@ -1214,6 +1234,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
 				do_end_of_xds (lo);
 				if (wb) 
 					wb->data608->channel=new_channel; // Switch from channel 3
+                dbg_print(DMT_XDS, "\rEnd XDS: %02X %02X channel=%d\n", hi, lo, new_channel);
                 continue;
             }
             if (hi>=0x10 && hi<0x1F) // Non-character code or special/extended char
@@ -1228,7 +1249,10 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
                     textprinted = 0;
                 }
 				if (!wb || wb->my_field==2)
+                {
+                    dbg_print(DMT_XDS, "\rEnd XDS: %02X %02X channel=%d new=%d\n", hi, lo,  (wb ? wb->data608->channel : -1), new_channel);
 					in_xds_mode=0; // Back to normal (CEA 608-8.6.2)
+                }
 				if (!wb) // Not XDS and we don't have a writebuffer, nothing else would have an effect
 					continue; 
 				if (wb->data608->last_c1==hi && wb->data608->last_c2==lo)
