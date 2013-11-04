@@ -205,9 +205,8 @@ void write_char (const unsigned char c, struct s_write *wb)
 
         if (use_buffer->empty)
         {
-            struct eia608_screen *get_current_visible_buffer (struct s_write *wb);
-            if (get_current_visible_buffer(wb) == use_buffer)
-                wb->data608->current_visible_start_ms=get_visible_start();
+            if (MODE_POPON != wb->data608->mode)
+                wb->data608->current_visible_start_ms = get_visible_start();
         }
         use_buffer->empty=0;
 
