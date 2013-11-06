@@ -6,7 +6,7 @@ CFLAGS += -g -Wno-write-strings
 
 ifdef HAVE_LIBPNG
 	CFLAGS += -DHAVE_LIBPNG
-	LDFLAGS += -lpng
+	LDLIBS += -lpng
 endif
 
 CXXFLAGS = $(CFLAGS)
