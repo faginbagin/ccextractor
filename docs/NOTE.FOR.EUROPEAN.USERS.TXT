@@ -1,0 +1,33 @@
+[If you are in the UK please read the final part]
+
+I regularly get emails from European users reporting that 
+ccextractor doesn't work with their recordings.
+
+ccextractor (for now) only extract closed captions. This refers
+to the TECHNICAL standard that US TV uses to carry subtitles. 
+
+Whether you believe that teletext subtitles are closed captions
+or not is not important: They don't follow EIA-608 (which is
+the official document that describes closed captions in 
+the USA) so ccextractor can't help.
+
+By the way I am from Europe (and live here, too) so I feel
+your pain. Just don't get annoyed when I say that Europe
+doesn't have closed captions. Of course we have subtitles
+(and we call them subtitles, not closed captions), they just
+use a different standard.
+
+Because I need English subtitles for American TV shows I wrote
+a NTSC (American TV standard) closed caption extractor. 
+
+--------
+UK USERS
+--------
+I am interested in writing a proper tool to extract subtitles
+from BBC and other British stations (it IS possible to extract
+subtitles already with Project-X but I hear the whole process
+is a pain).
+
+If you have the required hardware (capture card for example),
+time, patience, and willingness to provide capture samples 
+contact me. 

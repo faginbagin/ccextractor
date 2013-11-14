@@ -1066,7 +1066,8 @@ void telxcc_init(void)
 	if (!telxcc_inited)
 	{
 		telxcc_inited=1;
-		if (wbout1.fh!=-1) fdprintf(wbout1.fh, "\xef\xbb\xbf");		
+		if (wbout1.fh!=-1 && encoding!=ENC_UTF_8) // If encoding it UTF8 then this was already done
+			fdprintf(wbout1.fh, "\xef\xbb\xbf");		
 		memset (seen_sub_page,0,MAX_TLT_PAGES*sizeof (short int));
 	}	
 }

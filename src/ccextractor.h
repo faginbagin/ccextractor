@@ -30,7 +30,7 @@ typedef uint32_t in_addr_t;
 #include <netdb.h>
 #endif
 
-#define VERSION "0.67"
+#define VERSION "0.68a1"
 
 #include "disable_warnings.h"
 #ifdef _MSC_VER
@@ -409,6 +409,8 @@ enum stream_type
 
 enum mpeg_descriptor
 {
+	REGISTRATION = 0x05, 
+	DATA_STREAM_ALIGNMENT = 0x06,
 	ISO639_LANGUAGE = 0x0A,
 	VBI_DATA_DESCRIPTOR = 0x45,
 	VBI_TELETEXT_DESCRIPTOR = 0x46,
@@ -652,6 +654,7 @@ extern void build_parity_table(void);
 
 extern const unsigned char BROADCAST_HEADER[4];
 extern const unsigned char LITTLE_ENDIAN_BOM[2];
+extern const unsigned char UTF8_BOM[3];
 extern const unsigned char DVD_HEADER[8];
 extern const unsigned char lc1[1];
 extern const unsigned char lc2[1];

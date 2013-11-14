@@ -1,3 +1,14 @@
+0.68
+----
+- A couple of shared variables between 608 decoders were causing
+  problems when both fields were processed at the same time with
+  -12, fixed.
+- Added BOM for UTF-8 files.
+- Corrected a few extended characters in the UTF-8 encoding,
+  probably never used in real world captioning but since we got
+  a good test sample file...
+- Color and fonts in PAC commands were ignored, fixed (Helen Buus).
+
 0.67
 ----
 - Padding bytes were being discarded early in the process in 0.66,
