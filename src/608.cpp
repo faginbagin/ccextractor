@@ -1199,7 +1199,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
 					wb->data608->channel=wb->data608->new_channel; // Switch from channel 3
                 continue;
             }
-            if (hi>=0x10 && hi<0x1F) // Non-character code or special/extended char
+            if (hi>=0x10 && hi<=0x1F) // Non-character code or special/extended char
                 // http://www.geocities.com/mcpoodle43/SCC_TOOLS/DOCS/CC_CODES.HTML
                 // http://www.geocities.com/mcpoodle43/SCC_TOOLS/DOCS/CC_CHARS.HTML
             {
@@ -1219,11 +1219,9 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
 					// Duplicate dual code, discard. Correct to do it only in
 					// non-XDS, XDS codes shall not be repeated.
                     dbg_print(DMT_608, "Skipping command %02X,%02X Duplicate\n", hi, lo);
-#if 0
                     // Ignore only the first repetition
                     wb->data608->last_c1=-1;
                     wb->data608->last_c2=-1;
-#endif
 					continue;
 				}
 				wb->data608->last_c1=hi;
