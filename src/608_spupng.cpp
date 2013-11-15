@@ -94,8 +94,8 @@ SpuPng::SpuPng(struct s_write* wb)
 
 SpuPng::~SpuPng()
 {
-    delete dirname;
-    delete pngfile;
+    delete [] dirname;
+    delete [] pngfile;
 }
 
 
