@@ -429,6 +429,8 @@ int main(int argc, char *argv[])
 					writeraw (BROADCAST_HEADER,sizeof (BROADCAST_HEADER),&wbout1);
 				else
 				{
+					if (encoding==ENC_UTF_8) // Write BOM
+						writeraw (UTF8_BOM, sizeof (UTF8_BOM), &wbout1);
 					if (encoding==ENC_UNICODE) // Write BOM				
 						writeraw (LITTLE_ENDIAN_BOM, sizeof (LITTLE_ENDIAN_BOM), &wbout1);
 					write_subtitle_file_header (&wbout1);
@@ -464,8 +466,10 @@ int main(int argc, char *argv[])
 					writeraw (BROADCAST_HEADER,sizeof (BROADCAST_HEADER),&wbout2);
 				else
 				{
+					if (encoding==ENC_UTF_8) // Write BOM
+						writeraw (UTF8_BOM, sizeof (UTF8_BOM), &wbout2);
 					if (encoding==ENC_UNICODE) // Write BOM				
-						writeraw (LITTLE_ENDIAN_BOM, sizeof (LITTLE_ENDIAN_BOM), &wbout1);
+						writeraw (LITTLE_ENDIAN_BOM, sizeof (LITTLE_ENDIAN_BOM), &wbout2);
 					write_subtitle_file_header (&wbout2);
 				}
 			}

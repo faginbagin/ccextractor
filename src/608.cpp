@@ -2,9 +2,8 @@
 
 int     rowdata[] = {11,-1,1,2,3,4,12,13,14,15,5,6,7,8,9,10};
 // Relationship between the first PAC byte and the row number
+int in_xds_mode=0; 
 
-int new_channel = 1; // The new channel after a channel change
-int in_xds_mode = 0;
 extern int ts_headers_total;
 
 #define INITIAL_ENC_BUFFER_CAPACITY		2048
@@ -14,8 +13,7 @@ unsigned char str[2048]; // Another generic general purpose buffer
 unsigned enc_buffer_used;
 unsigned enc_buffer_capacity;
 
-// See how wb->data608->last_c1 and wb->data608->last_c2 are used.
-// unsigned int last_command_hi=0, last_command_low=0;
+
 
 LLONG minimum_fts=0; // No screen should start before this FTS
 
@@ -78,7 +76,7 @@ const char *command_type[] =
 	"AOF - Not Used (Alarm Off)",
 	"AON - Not Used (Alarm On)",
 	"DER - Delete to End of Row",
-    "RDC - Resume Direct Captioning",
+	"RDC - Resume Direct Captioning",
 	"RU1 - Fake Roll up 1 rows"
 };
 
@@ -143,6 +141,7 @@ void init_eia608 (struct eia608 *data)
     data->rollup_base_row=14;
 	data->ts_start_of_current_line=-1;
 	data->ts_last_char_received=-1;
+	data->new_channel=1;
 }
 
 eia608_screen *get_writing_buffer (struct s_write *wb)
@@ -223,7 +222,7 @@ void write_char (const unsigned char c, struct s_write *wb)
 void handle_text_attr (const unsigned char c1, const unsigned char c2, struct s_write *wb)
 {
     // Handle channel change
-    wb->data608->channel=new_channel;
+    wb->data608->channel=wb->data608->new_channel;
     if (wb->data608->channel!=cc_channel)
         return;
     dbg_print(DMT_608, "\r608: text_attr: %02X %02X",c1,c2);
@@ -641,8 +640,8 @@ int roll_up(struct s_write *wb)
 
     // If the buffer is now empty, let's set the flag
     // This will allow write_char to set visible start time appropriately
-    if (0 == rows_now)
-        use_buffer->empty = 1;
+	if (0 == rows_now)
+		use_buffer->empty = 1;
 
 	return (rows_now != rows_orig);
 }
@@ -688,7 +687,7 @@ void handle_command (/*const */ unsigned char c1, const unsigned char c2, struct
 	int changes=0; 
 
     // Handle channel change
-    wb->data608->channel=new_channel;
+    wb->data608->channel=wb->data608->new_channel;
     if (wb->data608->channel!=cc_channel)
         return;
 
@@ -791,8 +790,11 @@ void handle_command (/*const */ unsigned char c1, const unsigned char c2, struct
         case COM_ROLLUP2:            
 		case COM_ROLLUP3:
 		case COM_ROLLUP4:
-            if (wb->data608->mode==MODE_POPON)
+            if (wb->data608->mode==MODE_POPON || wb->data608->mode==MODE_PAINTON)
             {
+				/* CEA-608 C.10 Style Switching (regulatory) 
+				[...]if pop-up or paint-on captioning is already present in 
+				either memory it shall be erased[...] */
                 if (write_cc_buffer (wb))
                     wb->data608->screenfuls_counter++;
                 erase_memory (wb, true);			
@@ -941,6 +943,7 @@ void handle_end_of_data (struct s_write *wb)
     handle_command (0x14, 0x2c, wb); // EDM
 }
 
+// CEA-608, Anex F 1.1.1. - Character Set Table / Special Characters
 void handle_double (const unsigned char c1, const unsigned char c2, struct s_write *wb)
 {
     unsigned char c;
@@ -958,12 +961,12 @@ void handle_double (const unsigned char c1, const unsigned char c2, struct s_wri
 unsigned char handle_extended (unsigned char hi, unsigned char lo, struct s_write *wb)
 {
     // Handle channel change
-    if (new_channel > 2) 
+    if (wb->data608->new_channel > 2) 
     {
-        new_channel -= 2;
-        dbg_print(DMT_608, "\nChannel correction, now %d\n", new_channel);
+        wb->data608->new_channel -= 2;
+        dbg_print(DMT_608, "\nChannel correction, now %d\n", wb->data608->new_channel);
     }
-    wb->data608->channel=new_channel;
+    wb->data608->channel=wb->data608->new_channel;
     if (wb->data608->channel!=cc_channel)
         return 0;
 
@@ -997,12 +1000,12 @@ unsigned char handle_extended (unsigned char hi, unsigned char lo, struct s_writ
 void handle_pac (unsigned char c1, unsigned char c2, struct s_write *wb)
 {
     // Handle channel change
-    if (new_channel > 2) 
+    if (wb->data608->new_channel > 2) 
     {
-        new_channel -= 2;
-        dbg_print(DMT_608, "\nChannel correction, now %d\n", new_channel);
+        wb->data608->new_channel -= 2;
+        dbg_print(DMT_608, "\nChannel correction, now %d\n", wb->data608->new_channel);
     }
-    wb->data608->channel=new_channel;
+    wb->data608->channel=wb->data608->new_channel;
     if (wb->data608->channel!=cc_channel)
         return;
 
@@ -1113,25 +1116,6 @@ int check_channel (unsigned char c1, struct s_write *wb)
 * Returns 1 if something was written to screen, 0 otherwise */
 int disCommand (unsigned char hi, unsigned char lo, struct s_write *wb)
 {
-#if 0
-    // This code seems to be redundant and wrong
-    // Redundant because there are similar tests outside this function
-    // that use wb->data608->last_c1 and wb->data608->last_c2
-    // Wrong because, unlike last_c1 and last_c2, last_command_hi/low
-    // aren't cleared when a character (not a command) is received.
-	if (hi==last_command_hi && lo==last_command_low)
-	{
-		/* Duplicate commands are to be ignored, they can be sent twice 
-		   to help with poor reception conditions */ 
-		dbg_print(DMT_608, "Skipping command %02X,%02X duplicate\n", hi, lo);
-		last_command_hi=0;
-		last_command_low=0; 
-		return 0; 		
-	}
-	last_command_hi=hi;
-	last_command_low=lo;
-#endif
-
     int wrote_to_screen=0;
 
     /* Full channel changes are only allowed for "GLOBAL CODES",
@@ -1140,7 +1124,7 @@ int disCommand (unsigned char hi, unsigned char lo, struct s_write *wb)
     * "PREAMBLE ACCESS CODES", "BACKGROUND COLOR CODES" and
     * SPECIAL/SPECIAL CHARACTERS allow only switching
     * between 1&3 or 2&4. */
-    new_channel = check_channel (hi,wb);
+    wb->data608->new_channel = check_channel (hi,wb);
     //if (wb->data608->channel!=cc_channel)
     //    continue;
 
@@ -1214,7 +1198,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
             if (hi==0 && lo==0) // Just padding
                 continue;
 			
-            // dbg_print(DMT_608, "\r[%02X,%02X] field=%d channel=%d\n", hi, lo, wb ? wb->my_field : -1, wb ? wb->data608->channel : -1);
+            // printf ("\r[%02X:%02X]\n",hi,lo);
 
 			if (hi>=0x01 && hi<=0x0E && (wb==NULL || wb->my_field==2)) // XDS can only exist in field 2.
             {
@@ -1232,11 +1216,10 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
                 in_xds_mode=0;
 				do_end_of_xds (lo);
 				if (wb) 
-					wb->data608->channel=new_channel; // Switch from channel 3
-                dbg_print(DMT_XDS, "\rEnd XDS: %02X %02X channel=%d\n", hi, lo, new_channel);
+					wb->data608->channel=wb->data608->new_channel; // Switch from channel 3
                 continue;
             }
-            if (hi>=0x10 && hi<0x1F) // Non-character code or special/extended char
+            if (hi>=0x10 && hi<=0x1F) // Non-character code or special/extended char
                 // http://www.geocities.com/mcpoodle43/SCC_TOOLS/DOCS/CC_CODES.HTML
                 // http://www.geocities.com/mcpoodle43/SCC_TOOLS/DOCS/CC_CHARS.HTML
             {
@@ -1248,10 +1231,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
                     textprinted = 0;
                 }
 				if (!wb || wb->my_field==2)
-                {
-                    dbg_print(DMT_XDS, "\rEnd XDS: %02X %02X channel=%d new=%d\n", hi, lo,  (wb ? wb->data608->channel : -1), new_channel);
 					in_xds_mode=0; // Back to normal (CEA 608-8.6.2)
-                }
 				if (!wb) // Not XDS and we don't have a writebuffer, nothing else would have an effect
 					continue; 
 				if (wb->data608->last_c1==hi && wb->data608->last_c2==lo)

@@ -125,7 +125,7 @@ void get_char_in_latin_1 (unsigned char *buffer, unsigned char c)
         case 0x99: // apostrophe (yes, duped). See CCADI source code.
             c1=0x27;			
             break;
-        case 0x9a: // hyphen-minus
+        case 0x9a: // em dash
             c1=0x2d;			
             break;
         case 0x9b: // copyright sign
@@ -481,12 +481,14 @@ int get_char_in_utf_8 (unsigned char *buffer, unsigned char c) // Returns number
         case 0x98: // asterisk
             *buffer=0x2a;			
             return 1;
-        case 0x99: // apostrophe (yes, duped). See CCADI source code.
+        case 0x99: // Plain single quote
             *buffer=0x27;			
             return 1;
-        case 0x9a: // hyphen-minus
-            *buffer=0x2d;			
-            return 1;
+        case 0x9a: // em dash
+            *buffer=0xe2;			
+            *(buffer+1)=0x80;
+            *(buffer+2)=0x94;
+            return 3;
         case 0x9b: // copyright sign
             *buffer=0xc2;
             *(buffer+1)=0xa9;
@@ -496,15 +498,21 @@ int get_char_in_utf_8 (unsigned char *buffer, unsigned char c) // Returns number
             *(buffer+1)=0x84;
             *(buffer+2)=0xa0;
             return 3;
-        case 0x9d: // Full stop (.)
-            *buffer=0x2e;			
-            return 1;
-        case 0x9e: // Quoatation mark
-            *buffer=0x22;			
-            return 1;
-        case 0x9f: // Quoatation mark
-            *buffer=0x22;			
-            return 1;
+        case 0x9d: // Round bullet
+            *buffer=0xe2;			
+            *(buffer+1)=0x80;
+            *(buffer+2)=0xa2;
+            return 3;
+        case 0x9e: // Opening double quotes
+            *buffer=0xe2;			
+            *(buffer+1)=0x80;
+            *(buffer+2)=0x9c;
+            return 3;
+        case 0x9f: // Closing double quotes
+            *buffer=0xe2;			
+            *(buffer+1)=0x80;
+            *(buffer+2)=0x9d;
+            return 3;
         case 0xa0: // uppercase A, grave accent
             *buffer=0xc3;
             *(buffer+1)=0x80;
@@ -625,7 +633,7 @@ int get_char_in_utf_8 (unsigned char *buffer, unsigned char c) // Returns number
         case 0xbe: // Pipe (broken bar)
             *buffer=0xc2; 
             *(buffer+1)=0xa6;
-            return 1;
+            return 2;
         case 0xbf: // Tilde
             *buffer=0x7e; // Not sure
             return 1;
@@ -676,22 +684,22 @@ int get_char_in_utf_8 (unsigned char *buffer, unsigned char c) // Returns number
             *buffer=0xc3;
             *(buffer+1)=0xb8;
             return 2;
-        case 0xcc: // Upper left corner
+        case 0xcc: // Top left corner
             *buffer=0xe2;
             *(buffer+1)=0x8c;
             *(buffer+2)=0x9c;
             return 3;
-        case 0xcd: // Upper right corner
+        case 0xcd: // Top right corner
             *buffer=0xe2;
             *(buffer+1)=0x8c;
             *(buffer+2)=0x9d;
             return 3;
-        case 0xce: // Lower left corner
+        case 0xce: // Bottom left corner
             *buffer=0xe2;
             *(buffer+1)=0x8c;
             *(buffer+2)=0x9e;
             return 3;
-        case 0xcf: // Lower right corner
+        case 0xcf: // Bottom right corner
             *buffer=0xe2;
             *(buffer+1)=0x8c;
             *(buffer+2)=0x9f;

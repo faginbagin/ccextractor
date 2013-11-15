@@ -117,6 +117,7 @@ struct eia608
     int rollup_base_row;
 	LLONG ts_start_of_current_line; /* Time at which the first character for current line was received, =-1 no character received yet */
 	LLONG ts_last_char_received; /* Time at which the last written character was received, =-1 no character received yet */
+	int new_channel; // The new channel after a channel change		
 };
 
 

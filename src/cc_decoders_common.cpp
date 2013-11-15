@@ -10,8 +10,8 @@ LLONG get_visible_start (void)
 	LLONG fts = get_fts();
 	if (fts <= minimum_fts)
 		fts = minimum_fts+1;
-    dbg_print(DMT_608, "Visible Start time=%s\n", print_mstime(fts));
-    return fts;
+	dbg_print(DMT_608, "Visible Start time=%s\n", print_mstime(fts));
+	return fts;
 }
 
 /* This function returns the current FTS and saves it so it can be used by get_visible_start */

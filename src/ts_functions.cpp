@@ -511,11 +511,16 @@ void process_mpeg_descriptor (unsigned char *data, unsigned length)
 			}
 			break;
 		default:
+			if (data[0]==REGISTRATION) // Registration descriptor, could be useful eventually
+				break;			
+			if (data[0]==DATA_STREAM_ALIGNMENT) // Data stream alignment descriptor
+				break;
 			if (data[0]>=0x13 && data[0]<=0x3F) // Reserved
 				break;
 			if (data[0]>=0x40 && data[0]<=0xFF) // User private
 				break;
 			mprint ("Still unsupported MPEG descriptor type=%d (%02X)\n",data[0],data[0]);
+			break;
 	}
 }
 
