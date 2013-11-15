@@ -1208,7 +1208,6 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
 				{
 					ts_start_of_xds=get_fts();
 					in_xds_mode=1;
-                    dbg_print(DMT_XDS, "\rBegin XDS: %02X %02X\n", hi, lo);
 				}
             }
             if (hi==0x0F && in_xds_mode && (wb==NULL || wb->my_field==2)) // End of XDS block
