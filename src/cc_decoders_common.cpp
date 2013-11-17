@@ -20,6 +20,6 @@ LLONG get_visible_end (void)
 	LLONG fts = get_fts();
 	if (fts>minimum_fts)
 		minimum_fts=fts;
-    dbg_print(DMT_608, "Visible End time=%s\n", print_mstime(fts));
+	dbg_print(DMT_608, "Visible End time=%s\n", print_mstime(fts));
 	return fts;
 }
