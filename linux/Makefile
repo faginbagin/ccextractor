@@ -77,7 +77,7 @@ all: ccextractor
 
 .PHONY: clean
 clean:
-	rm -f *.o ccextractor
+	rm -f *.o ccextractor depend
 
 ccextractor: $(src_OBJS) $(gpacmp4_OBJS)
 
