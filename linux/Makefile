@@ -2,11 +2,12 @@
 HAVE_LIBPNG = true
 
 CPPFLAGS += -DGPAC_CONFIG_LINUX -D_FILE_OFFSET_BITS=64 -I../src/gpacmp4
+CPPFLAGS += -I../libpng -I../zlib
 CFLAGS += -g -Wno-write-strings
 
 ifdef HAVE_LIBPNG
 	CFLAGS += -DHAVE_LIBPNG
-	LDLIBS += -lpng
+	LDLIBS += ../libpng/.libs/libpng12.a ../zlib/libz.a
 endif
 
 CXXFLAGS = $(CFLAGS)
