@@ -3,6 +3,11 @@
 #include <assert.h>
 #include <sys/stat.h>
 
+#ifdef _WIN32
+#include <direct.h>
+#define mkdir(path, mode) _mkdir(path)
+#endif
+
 #include "608_spupng.h"
 
 // #include "wstfont2.xbm" // Teletext font, not used
@@ -62,7 +67,7 @@ SpuPng::SpuPng(struct s_write* wb)
     }
     dirname = new char [strlen(wb->filename) + 3];
     strcpy(dirname, wb->filename);
-    char* p = rindex(dirname, '.');
+    char* p = strrchr(dirname, '.');
     if (0 == p)
         p = dirname + strlen(dirname);
     *p = '\0';
@@ -125,7 +130,7 @@ SpuPng::writeCCBuffer(struct eia608_screen* data, struct s_write *wb)
         return 0;
     }
 
-    int row, col;
+    int row;
     int empty_buf = 1;
     for (row = 0; row < 15; row++)
     {
@@ -166,11 +171,11 @@ SpuPng::writeCCBuffer(struct eia608_screen* data, struct s_write *wb)
     dbg_print(DMT_608, " yoffset=\"%d\"", yOffset);
     fprintf(fpxml, ">\n<!--\n");
     dbg_print(DMT_608, ">\n<!--\n");
-    for (int i = 0; i < ROWS; i++)
+    for (row = 0; row < ROWS; row++)
     {
-        if (data->row_used[i])
+        if (data->row_used[row])
         {
-            int len = get_decoder_line_encoded(subline, i, data);
+            int len = get_decoder_line_encoded(subline, row, data);
             // Check for characters that spumux won't parse
             // null chars will be changed to space
             // pairs of dashes will be changed to underscores
@@ -527,7 +532,6 @@ SpuPng::exportPNG(struct eia608_screen* data)
     png_bytep image;
     int ww, wh, rowstride, row_adv;
     int row;
-    int i;
 
     assert ((sizeof(png_byte) == sizeof(uint8_t))
             && (sizeof(*image) == sizeof(uint8_t)));
