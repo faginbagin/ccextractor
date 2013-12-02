@@ -3,7 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ccextractor", "ccextractor.vcproj", "{0F0063C4-BCBC-4379-A6D5-84A5669C940A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{6C7A734D-074D-4AC3-B2DE-3DC829428224} = {6C7A734D-074D-4AC3-B2DE-3DC829428224}
 		{1A303DEC-794B-46EC-BE25-4B1D30C7CD65} = {1A303DEC-794B-46EC-BE25-4B1D30C7CD65}
 	EndProjectSection
 EndProject
