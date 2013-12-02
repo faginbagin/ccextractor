@@ -38,6 +38,7 @@ write_spumux_footer(struct s_write *wb)
         ((SpuPng*)wb->spupng_data) -> writeFooter();
         delete (SpuPng*)wb->spupng_data;
         wb->spupng_data = 0;
+        wb->fh = -1;
     }
 }
 
