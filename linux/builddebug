@@ -1,11 +1,11 @@
 #!/bin/bash
 
 cd ../zlib
-#./configure
+./configure
 make || exit $?
 
 cd ../libpng
-#./configure
+./configure
 make || exit $?
 
 cd ../linux
