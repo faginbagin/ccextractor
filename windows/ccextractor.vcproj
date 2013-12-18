@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../src/gpacmp4;../libpng;../zlib"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_FILE_OFFSET_BITS=64;HAVE_LIBPNG"
+				AdditionalIncludeDirectories="../src/gpacmp4;../src/libpng;../src/zlib"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_FILE_OFFSET_BITS=64"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,10 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngd.lib zlib.lib WS2_32.Lib"
+				AdditionalDependencies="WS2_32.Lib"
 				ShowProgress="0"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\libpng\projects\visualc9\Win32_LIB_Debug;..\zlib"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -114,8 +114,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../src/gpacmp4;../libpng;../zlib"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_FILE_OFFSET_BITS=64;HAVE_LIBPNG"
+				AdditionalIncludeDirectories="../src/gpacmp4;../src/libpng;../src/zlib"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_FILE_OFFSET_BITS=64"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -133,9 +133,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpng.lib zlib.lib WS2_32.Lib"
+				AdditionalDependencies="WS2_32.Lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\libpng\projects\visualc9\Win32_LIB_Release;..\zlib"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -198,11 +198,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\bitstream.h"
+				RelativePath="..\src\gpacmp4\gpac\bitstream.h"
 				>
 			</File>
 			<File
-				RelativePath="..\src\gpacmp4\gpac\bitstream.h"
+				RelativePath="..\src\bitstream.h"
 				>
 			</File>
 			<File
@@ -218,7 +218,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\zlib\crc32.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\deflate.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\disable_warnings.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\gzguts.h"
 				>
 			</File>
 			<File
@@ -227,6 +239,22 @@
 			</File>
 			<File
 				RelativePath="..\src\gpacmp4\gpac\ietf.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\inffast.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\inffixed.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\inflate.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\inftrees.h"
 				>
 			</File>
 			<File
@@ -278,6 +306,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\libpng\png.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libpng\pngconf.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\gpacmp4\gpac\setup.h"
 				>
 			</File>
@@ -306,11 +342,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\zlib\trees.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\gpacmp4\gpac\utf.h"
 				>
 			</File>
 			<File
 				RelativePath="..\src\gpacmp4\gpac\version.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\zconf.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\zlib.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\zutil.h"
 				>
 			</File>
 		</Filter>
@@ -359,6 +411,10 @@
 			</File>
 			<File
 				RelativePath="..\src\activity.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\adler32.c"
 				>
 			</File>
 			<File
@@ -430,7 +486,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\zlib\crc32.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\gpacmp4\data_map.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\deflate.c"
 				>
 			</File>
 			<File
@@ -471,6 +535,18 @@
 			</File>
 			<File
 				RelativePath="..\src\gpacmp4\hinting.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\inffast.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\inflate.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\inftrees.c"
 				>
 			</File>
 			<File
@@ -554,6 +630,42 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\libpng\png.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libpng\pngerror.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libpng\pngmem.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libpng\pngset.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libpng\pngtrans.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libpng\pngwio.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libpng\pngwrite.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libpng\pngwtran.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\libpng\pngwutil.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\gpacmp4\qos.c"
 				>
 			</File>
@@ -594,6 +706,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\zlib\trees.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\ts_functions.cpp"
 				>
 			</File>
@@ -615,6 +731,10 @@
 			</File>
 			<File
 				RelativePath="..\src\xds.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\zlib\zutil.c"
 				>
 			</File>
 		</Filter>
