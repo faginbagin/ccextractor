@@ -1,4 +1,6 @@
-
+#ifdef _WIN32
+#pragma warning(disable:4996) // Disable messages like this one: '_snprintf': This function or variable may be unsafe. Consider using _snprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. 
+#endif 
 /* png.c - location for general purpose libpng functions
  *
  * Last changed in libpng 1.2.46 [February 25, 2011]
