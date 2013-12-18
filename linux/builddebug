@@ -1,5 +1,4 @@
 #!/bin/bash
 g++ -Wno-write-strings -g -DGPAC_CONFIG_LINUX -D_FILE_OFFSET_BITS=64  -I../src/gpacmp4/  -o ccextractor \
 $(find ../src/ -name '*.cpp') \
-$(find ../src/ \( -path ../src/libpng -o -path ../src/zlib \) -prune  -o -name '*.c' -print) \
--lpng
+$(find ../src/ -name '*.c')

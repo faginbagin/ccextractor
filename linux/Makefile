@@ -2,7 +2,6 @@
 
 CPPFLAGS += -DGPAC_CONFIG_LINUX -D_FILE_OFFSET_BITS=64 -I../src/gpacmp4
 CFLAGS += -g -Wno-write-strings
-LDLIBS += -lpng
 
 CXXFLAGS = $(CFLAGS)
 CC = $(CXX)
@@ -11,7 +10,7 @@ bindir = $(HOME)/bin
 INSTALL = cp -f -p
 INSTALL_PROGRAM = cp -f -p
 
-VPATH = ../src:../src/gpacmp4
+VPATH = ../src:../src/gpacmp4:../src/libpng:../src/zlib
 
 src_OBJS = \
 	608_helpers.o 608.o 608_sami.o 608_smptett.o 608_srt.o 608_spupng.o \
@@ -67,6 +66,24 @@ gpacmp4_SRC = \
 	../src/gpacmp4/track.c ../src/gpacmp4/tx3g.c \
 	../src/gpacmp4/url.c ../src/gpacmp4/utf.c
 
+libpng_SRC = \
+	../src/libpng/png.c ../src/libpng/pngerror.c ../src/libpng/pngmem.c \
+	../src/libpng/pngset.c ../src/libpng/pngtrans.c ../src/libpng/pngwio.c \
+	../src/libpng/pngwrite.c ../src/libpng/pngwtran.c ../src/libpng/pngwutil.c
+
+libpng_OBJS = \
+	png.o pngerror.o pngmem.o pngset.o pngtrans.o pngwio.o \
+	pngwrite.o pngwtran.o pngwutil.o
+
+zlib_SRC = \
+	../src/zlib/adler32.c ../src/zlib/crc32.c ../src/zlib/deflate.c \
+	../src/zlib/inffast.c ../src/zlib/inflate.c ../src/zlib/inftrees.c \
+	../src/zlib/trees.c ../src/zlib/zutil.c
+
+zlib_OBJS = \
+	adler32.o crc32.o deflate.o inffast.o inflate.o inftrees.o \
+	trees.o zutil.o
+
 .PHONY: all
 all: ccextractor
 
@@ -74,13 +91,13 @@ all: ccextractor
 clean:
 	rm -f *.o ccextractor depend
 
-ccextractor: $(src_OBJS) $(gpacmp4_OBJS)
+ccextractor: $(src_OBJS) $(gpacmp4_OBJS) $(libpng_OBJS) $(zlib_OBJS)
 
 .PHONY: install
 install: ccextractor
 	$(INSTALL_PROGRAM) ccextractor $(bindir)
 
 depend:
-	$(CXX) $(CXXFLAGS) -E -MM $(src_SRC) $(gpacmp4_SRC) > depend
+	$(CXX) $(CXXFLAGS) -E -MM $(src_SRC) $(gpacmp4_SRC) $(libpng_SRC) $(zlib_SRC) > depend
 
 include depend
