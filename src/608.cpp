@@ -114,7 +114,7 @@ void clear_eia608_cc_buffer (struct eia608_screen *data)
     {
         memset(data->characters[i],' ',CC608_SCREEN_WIDTH);
         data->characters[i][CC608_SCREEN_WIDTH]=0;		
-        memset (data->colors[i],COL_TRANSPARENT,CC608_SCREEN_WIDTH+1); 
+        memset (data->colors[i],COL_TRANSPARENT,CC608_SCREEN_WIDTH+1);
         memset (data->fonts[i],FONT_REGULAR,CC608_SCREEN_WIDTH+1); 
         data->row_used[i]=0;        
     }
@@ -182,7 +182,7 @@ void delete_to_end_of_row (struct s_write *wb)
 		{
 			// TODO: This can change the 'used' situation of a column, so we'd
 			// need to check and correct.
-	        use_buffer->characters[wb->data608->cursor_row][i]=' ';
+	        use_buffer->characters[wb->data608->cursor_row][i]=' ';			
 			use_buffer->colors[wb->data608->cursor_row][i]=COL_TRANSPARENT;
 			use_buffer->fonts[wb->data608->cursor_row][i]=wb->data608->font;	
 		}
@@ -269,12 +269,10 @@ void write_subtitle_file_footer (struct s_write *wb)
 			enc_buffer_used=encode_line (enc_buffer,(unsigned char *) str);
 			write (wb->fh, enc_buffer,enc_buffer_used);
 			break;
-#ifdef HAVE_LIBPNG
         case OF_SPUPNG:
             write_spumux_footer(wb);
             break;
-#endif
-		default: // Nothing to do. Only SAMI has a footer
+		default: // Nothing to do, no footer on this format
             break;
     }
 }
@@ -301,11 +299,9 @@ void write_subtitle_file_header (struct s_write *wb)
         case OF_RCWT: // Write header
             write (wb->fh, rcwt_header, sizeof(rcwt_header));
             break;
-#ifdef HAVE_LIBPNG
         case OF_SPUPNG:
             write_spumux_header(wb);
             break;
-#endif
         case OF_TRANSCRIPT: // No header. Fall thru
         default:
             break;
@@ -482,11 +478,9 @@ int write_cc_buffer (struct s_write *wb)
             case OF_TRANSCRIPT:
                 wrote_something = write_cc_buffer_as_transcript (data,wb);
                 break;
-#ifdef HAVE_LIBPNG
             case OF_SPUPNG:
                 wrote_something = write_cc_buffer_as_spupng (data,wb);
                 break;
-#endif
             default: 
                 break;
         }
@@ -616,14 +610,14 @@ int roll_up(struct s_write *wb)
     }
     for (int j=0;j<(1+wb->data608->cursor_row-keep_lines);j++)
     {
-        memset(use_buffer->characters[j],' ',CC608_SCREEN_WIDTH);			
-        memset(use_buffer->colors[j],COL_TRANSPARENT,CC608_SCREEN_WIDTH);
+        memset(use_buffer->characters[j],' ',CC608_SCREEN_WIDTH);			        
+		memset(use_buffer->colors[j],COL_TRANSPARENT,CC608_SCREEN_WIDTH);
         memset(use_buffer->fonts[j],FONT_REGULAR,CC608_SCREEN_WIDTH);
         use_buffer->characters[j][CC608_SCREEN_WIDTH]=0;
         use_buffer->row_used[j]=0;
     }
     memset(use_buffer->characters[lastrow],' ',CC608_SCREEN_WIDTH);
-    memset(use_buffer->colors[lastrow],COL_TRANSPARENT,CC608_SCREEN_WIDTH);
+    memset(use_buffer->colors[lastrow],COL_WHITE,CC608_SCREEN_WIDTH);
     memset(use_buffer->fonts[lastrow],FONT_REGULAR,CC608_SCREEN_WIDTH);
 
     use_buffer->characters[lastrow][CC608_SCREEN_WIDTH]=0;
@@ -840,6 +834,8 @@ void handle_command (/*const */ unsigned char c1, const unsigned char c2, struct
 				case COM_ROLLUP4:
 					wb->data608->mode=MODE_ROLLUP_4;
 					break;
+				default: // Impossible, but remove compiler warnings
+					break;
 			}
             break;
         case COM_CARRIAGERETURN:
@@ -1053,7 +1049,7 @@ void handle_pac (unsigned char c1, unsigned char c2, struct s_write *wb)
 		{
 			if (use_buffer->row_used[j])
 			{
-				memset(use_buffer->characters[j],' ',CC608_SCREEN_WIDTH);			
+				memset(use_buffer->characters[j],' ',CC608_SCREEN_WIDTH);							
 				memset(use_buffer->colors[j],COL_TRANSPARENT,CC608_SCREEN_WIDTH);
 				memset(use_buffer->fonts[j],FONT_REGULAR,CC608_SCREEN_WIDTH);
 				use_buffer->characters[j][CC608_SCREEN_WIDTH]=0;
@@ -1237,7 +1233,7 @@ void process608 (const unsigned char *data, int length, struct s_write *wb)
 				{
 					// Duplicate dual code, discard. Correct to do it only in
 					// non-XDS, XDS codes shall not be repeated.
-                    dbg_print(DMT_608, "Skipping command %02X,%02X Duplicate\n", hi, lo);
+					 dbg_print(DMT_608, "Skipping command %02X,%02X Duplicate\n", hi, lo);
                     // Ignore only the first repetition
                     wb->data608->last_c1=-1;
                     wb->data608->last_c2=-1;

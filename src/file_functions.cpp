@@ -250,12 +250,12 @@ void buffered_seek (int offset)
         if (filebuffer_pos<0)
         {
             // We got into the start buffer (hopefully)
-            startbytes_pos+=filebuffer_pos;
-            filebuffer_pos=0;
-            if (startbytes_pos<0)
+            if (startbytes_pos+filebuffer_pos < 0)
             {
                 fatal (EXIT_BUG_BUG, "PANIC: Attempt to seek before buffer start, this is a bug!");
             }
+            startbytes_pos+=filebuffer_pos;
+            filebuffer_pos=0;
         }
     }
     else

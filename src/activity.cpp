@@ -36,7 +36,7 @@ void activity_xds_program_identification_number (unsigned minutes, unsigned hour
 {
     if (gui_mode_reports)
     {
-		fprintf (stderr, "###XDSPROGRAMIDENTIFICATIONNUMBER#%u#u#u#u\n", minutes,hours,date,month);
+		fprintf (stderr, "###XDSPROGRAMIDENTIFICATIONNUMBER#%u#%u#%u#%u\n", minutes,hours,date,month);
         fflush (stderr); 
     }
 }

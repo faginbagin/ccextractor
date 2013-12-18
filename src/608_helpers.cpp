@@ -180,7 +180,7 @@ unsigned get_decoder_line_encoded (unsigned char *buffer, int line_num, struct e
         int its_col = data->colors[line_num][i];
         if (its_col != col  && !nofontcolor)
         {
-            if (col!=COL_WHITE && col < COL_BLACK) // We need to close the previous font tag
+            if (col!=COL_WHITE && col < COL_BLACK) // We need to close the previous font tag // We need to close the previous font tag
             {
                 buffer+= encode_line (buffer,(unsigned char *) "</font>");
             }

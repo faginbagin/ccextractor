@@ -1,5 +1,3 @@
-#ifdef HAVE_LIBPNG
-
 #include <assert.h>
 #include <sys/stat.h>
 
@@ -38,7 +36,7 @@ write_spumux_footer(struct s_write *wb)
         ((SpuPng*)wb->spupng_data) -> writeFooter();
         delete (SpuPng*)wb->spupng_data;
         wb->spupng_data = 0;
-        wb->fh = -1;
+		wb->fh = -1;
     }
 }
 
@@ -532,7 +530,7 @@ SpuPng::exportPNG(struct eia608_screen* data)
     png_bytep *row_pointer;
     png_bytep image;
     int ww, wh, rowstride, row_adv;
-    int row;
+    int row;    
 
     assert ((sizeof(png_byte) == sizeof(uint8_t))
             && (sizeof(*image) == sizeof(uint8_t)));
@@ -604,4 +602,3 @@ unknown_error:
 // End copy from http://zapping.cvs.sourceforge.net/viewvc/zapping/vbi/src/exp-gfx.c?view=markup&pathrev=zvbi-0-2-33
 //
 
-#endif

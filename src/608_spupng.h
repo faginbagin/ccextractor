@@ -1,5 +1,4 @@
 #ifndef __608_SPUPNG_H__
-#ifdef HAVE_LIBPNG
 
 #include "png.h"
 #include "ccextractor.h"
@@ -34,5 +33,4 @@ class SpuPng
         int yOffset;
 };
 
-#endif /* HAVE_LIBPNG */
 #endif /* __608_SPUPNG_H__ */

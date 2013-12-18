@@ -8,7 +8,7 @@
 
 void init_write (struct s_write *wb, int field)
 {
-    memset(wb, 0, sizeof(struct s_write));
+	memset(wb, 0, sizeof(struct s_write));
     wb->fh=-1;
     wb->filename=NULL;	
     wb->data608=(struct eia608 *) malloc (sizeof (struct eia608));
@@ -37,9 +37,7 @@ void writedata (const unsigned char *data, int length, struct s_write *wb)
              write_format==OF_SAMI ||
              write_format==OF_SRT ||
              write_format==OF_TRANSCRIPT ||
-#ifdef HAVE_LIBPNG
              write_format==OF_SPUPNG ||
-#endif
 			 write_format==OF_NULL)
         process608 (data,length,wb);
     else

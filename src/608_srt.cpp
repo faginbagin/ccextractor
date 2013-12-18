@@ -63,7 +63,7 @@ void write_stringz_as_srt (char *string, struct s_write *wb, LLONG ms_start, LLO
     dbg_print(DMT_608, "- - - - - - - - - - - -\r\n");
    
     write (wb->fh, encoded_crlf, encoded_crlf_length);
-    free(el);
+	free(el);
 }
 
 int write_cc_buffer_as_srt (struct eia608_screen *data, struct s_write *wb)

@@ -1,17 +1,5 @@
 #!/bin/bash
-
-cd ../zlib
-./configure
-make || exit $?
-
-cd ../libpng
-./configure
-make || exit $?
-
-cd ../linux
-g++ -Wno-write-strings \
--DHAVE_LIBPNG -DGPAC_CONFIG_LINUX -D_FILE_OFFSET_BITS=64 \
--I../src/gpacmp4/ -I../libpng -I../zlib \
-$(find ../src/ -name '*.cpp') $(find ../src/ -name '*.c') \
-../libpng/.libs/libpng12.a ../zlib/libz.a \
--o ccextractor
+g++ -Wno-write-strings -DGPAC_CONFIG_LINUX -D_FILE_OFFSET_BITS=64  -I../src/gpacmp4/  -o ccextractor \
+$(find ../src/ -name '*.cpp') \
+$(find ../src/ \( -path ../src/libpng -o -path ../src/zlib \) -prune  -o -name '*.c' -print) \
+-lpng
