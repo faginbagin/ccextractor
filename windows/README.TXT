@@ -1,4 +1,4 @@
-The Windows version is now distributed separately, please visit
+The Windows binaries are now distributed separately, please visit
 
 http://ccextractor.sourceforge.net
 

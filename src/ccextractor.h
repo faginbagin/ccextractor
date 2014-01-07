@@ -30,7 +30,7 @@ typedef uint32_t in_addr_t;
 #include <netdb.h>
 #endif
 
-#define VERSION "0.68a1"
+#define VERSION "0.68"
 
 #include "disable_warnings.h"
 #ifdef _MSC_VER

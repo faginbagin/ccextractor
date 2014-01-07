@@ -8,6 +8,10 @@
   probably never used in real world captioning but since we got
   a good test sample file...
 - Color and fonts in PAC commands were ignored, fixed (Helen Buus).
+- Added a new output format, spupng. It consists on one .png file
+  for each subtitle frame and one .xml with all the timing 
+  (Heleen Buus).
+- Some fixes (Chris Small).
 
 0.67
 ----
@@ -24,7 +28,7 @@
 - Added -autodash : When two people are talking, add a dash as
   needed (this is based on subtitle position). Only in .srt and
   with -trim. Quite experimental, feedback appreciated.
-- Added -latin1 to select Latin 1 as encoding. Default is not
+- Added -latin1 to select Latin 1 as encoding. Default is now
   UTF-8 (-utf8 still exists but it's not needed).
 - Added -ru1, which emulates a (non-existing in real life) 1 line
   roll-up mode. 
