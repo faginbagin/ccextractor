@@ -2,13 +2,13 @@
 <HTML>
 <HEAD>
 	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
-	<TITLE>ccextractor spupng output format</TITLE>
+	<TITLE>Using SPUPNG</TITLE>
     <style type="text/css">
     body { font-family: "Liberation Sans", Arial, Helvetica, sans-serif; }
     </style>
 </HEAD>
 <BODY LANG="en-US" TEXT="#000000" DIR="LTR">
-<H1>About the SPUPNG output format</H1>
+<H1>Using SPUPNG</H1>
 <H2>What does SPUPNG mean?</H2>
 <P>SPUPNG is two acronyms:</P>
 <dl compact>
@@ -174,7 +174,9 @@ needed to select:</P>
 script for ffmpeg version 0.6:</P>
 <pre>
 #!/bin/bash
+
 # Transcode video to DVD-Video compatible format.
+
 # Usage: do-ffmpeg infile outfile
 
 if [ $# != 2 ]
@@ -190,7 +192,8 @@ fi
 # you might want to crop the letterboxed format, using the following:
 #crop="-croptop 60 -cropbottom 60"
 # Sometimes you get a 4:3 video that's been letterboxed on the sides, too:
-#crop="-cropleft 4 -cropright 12"
+crop="-croptop 60 -cropbottom 60 -cropleft 90 -cropright 90"
+# The numbers need to be adjusted for the source video resolution
 
 # Bitrate determines the size and quality of the video:
 # 4670k = approx 2 hours of video on a 4.7GB single layer DVD
@@ -201,16 +204,16 @@ bitrate=2400k
 # Video resolution:
 # Valid values for NTSC DVD-Video are: 720x480 704x480 352x480 352x240
 # Valid values for PAL DVD-Video are: 720x576 704x576 352x576 352x288
-# I usually use 720x480, unless the input is 704x480, then I use 704x480
-size=704x480
+# I usually use 720x480, unless the input is 704 wide, then I use 704x480
+size=720x480
 
 # Audio codec
 # If input file's audio is AC-3 or MPEG layer-2, you can usually let
 # ffmpeg copy it, using the following value for $acodec
-acodec="-acodec copy"
+#acodec="-acodec copy"
 # If the input audio isn't one of the above, or if there is noise in the audio
 # stream that throws audio-video out of sync, the following usually fixes it.
-#acodec="-acodec ac3 -ab 192k -ac 2 -async 1200"
+acodec="-acodec ac3 -ab 192k -ac 2 -async 1200"
 
 # Whether to deinterlace video:
 deint="-deinterlace"
@@ -220,33 +223,75 @@ deint="-deinterlace"
 # 4:3 = fullscreen
 aspect="4:3"
 
-ffmpeg -threads 4 -v 1 -i $1 $crop $deint \
--r ntsc -target dvd -b $bitrate -s $size \
+ffmpeg -threads 4 -v 1 -i $1 $deint $crop \
+-r ntsc -target ntsc-dvd -b $bitrate -s $size \
 $acodec -copyts -aspect $aspect \
 -y $2
 </pre>
-<P>The script will need tweaking if you use a
-distribution that supports libav-tools or a newer version of ffmpeg.
-The cropping options become something like:</P>
+<P>If you are using a Linux distribution that supports libav-tools
+you will need a somewhat different script <code>do-avconv</code>:
 <pre>
-#crop=&quot;-vf crop=in_w*3/4:in_h*3/4,scale=720:480&quot;
-#crop=&quot;-vf crop=in_w:in_h*3/4,scale=720:480&quot;
-</pre>
-<P>The audio codec options become:</P>
-<pre>
-acodec=&quot;-c:a copy&quot;
-#acodec=&quot;-c:a ac3 -b:a 192k -ac 2 -async 1200&quot;
-</pre>
-<P>The command becomes:</P>
-<pre>
+#!/bin/bash
+
+# Transcode video to DVD-Video compatible format.
+
+# Usage: do-avconv infile outfile
+
+if [ $# != 2 ]
+then
+echo "Usage: do-avconv infile outfile"
+exit 1
+fi
+
+# options of interest (applicable to avconv version 0.8.9):
+
+# Cropping:
+# If a widescreen video is letterboxed in a 4:3 aspect ratio,
+# you might want to crop the letterboxed format, using the following:
+#crop="-vf crop=in_w:in_h*3/4,scale=720:480"
+# Sometimes you get a 4:3 video that's been letterboxed on the sides, too:
+crop="-vf crop=in_w*3/4:in_h*3/4,scale=720:480"
+# The scale should match the target video resolution
+# i.e. same as size below
+
+# Bitrate determines the size and quality of the video:
+# 4670k = approx 2 hours of video on a 4.7GB single layer DVD
+# 3200k = approx 3 hours of video on a 4.7GB single layer DVD
+# 2400k = approx 4 hours of video on a 4.7GB single layer DVD
+bitrate=2400k
+
+# Video resolution:
+# Valid values for NTSC DVD-Video are: 720x480 704x480 352x480 352x240
+# Valid values for PAL DVD-Video are: 720x576 704x576 352x576 352x288
+# I usually use 720x480, unless the input is 704 wide, then I use 704x480
+size=720x480
+
+# Audio codec
+# If input file's audio is AC-3 or MPEG layer-2, you can usually let
+# avconv copy it, using the following value for $acodec
+#acodec="-c:a copy"
+# If the input audio isn't one of the above, or if there is noise in the audio
+# stream that throws audio-video out of sync, the following usually fixes it.
+acodec="-c:a ac3 -b:a 192k -ac 2 -async 1200"
+
+# Whether to deinterlace video:
+deint="-vf yadif"
+
+# Aspect ratio:
+# 16:6 = widescreen
+# 4:3 = fullscreen
+aspect="4:3"
+
 avconv -threads 4 -v debug -i $1 $deint $crop \
--r ntsc -target ntsc-dvd -b:v $bitrate -s $size -copyts \
-$acodec -aspect $aspect \
+-r ntsc -target ntsc-dvd -b:v $bitrate -s $size \
+$acodec -copyts -aspect $aspect \
 -y $2
 </pre>
 <P>After editing the script, transcode the source video with the
 command:</P>
 <P><code>do-ffmpeg source-video-file transcoded.mpg</code></P>
+<P>or</P>
+<P><code>do-avconv source-video-file transcoded.mpg</code></P>
 
 <LI><H3>Multiplex SPUPNG captions into subtitle stream</H3>
 <P><code>spumux spumux.xml &lt; transcoded.mpg &gt; subtitles.mpg</code></P>
@@ -300,5 +345,9 @@ subtitle key on the remote. Enjoy!
 
 </OL>
 
+<H2>Contact</H2>
+If you have questions or comments about the SPUPNG output format, please direct them to: 
+<IMG SRC="hbuus.png" ALT="mail" align="absmiddle">
+</P>
 </BODY>
 </HTML>
