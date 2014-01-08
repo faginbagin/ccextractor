@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>ccextractor spupng output format</TITLE>
+    <style type="text/css">
+    body { font-family: "Liberation Sans", Arial, Helvetica, sans-serif; }
+    </style>
+</HEAD>
+<BODY LANG="en-US" TEXT="#000000" DIR="LTR">
+<H1>About the SPUPNG output format</H1>
+<H2>What does SPUPNG mean?</H2>
+<P>SPUPNG is two acronyms:</P>
+<dl compact>
+<dt><b>SPU</b></dt>
+<dd>Sub-Picture Unit.
+According to <A HREF="http://en.wikibooks.org/wiki/Inside_DVD-Video/Subpicture_Streams">wikibooks.org</A>:
+<q>Subpictures are used to display subtitles as well as menu buttons,
+overlaid on the video. These are stored in an MPEG stream (private
+stream 1) as a sequence of Sub-Picture Units (SPUs).</q>
+</dd>
+<dt><b>PNG</b></dt>
+<dd>Portable Network Graphics.
+According to <A HREF="http://www.libpng.org/pub/png/">libpng.org</A>:
+<q>An Open, Extensible Image Format with Lossless Compression.</q>
+</dd>
+</dl>
+<H2>Why SPUPNG?</H2>
+<P>The SPUPNG format is intended for use with
+authoring DVDs. The SPUPNG format does a better job of preserving the
+original closed caption format than the text based formats supported
+by ccextractor. Some of the problems with the text based formats are:</P>
+<UL>
+	<LI><P>They lose row information. Closed captions
+	can be displayed anywhere in a grid of 15 rows by 32 columns. But
+	the text based formats do not indicate on what rows the captions
+	should be displayed. So most applications will display captions near
+	the bottom of the video, where most closed captions are usually
+	placed. However, there are times when the video contains information
+	that closed caption authors take care to not obscure by placing
+	captions on the top rows, and sometimes even in the middle of a
+	video. Captions are often placed at the top of video when the video
+	is displaying text, such as credits, or the name of a speaker in a
+	documentary.</P>
+	<LI><P>They may lose column information. ccextractor
+	provides whitespace in the text based formats so it is clear where
+	captions should be placed horizontally. But some applications ignore
+	the leading whitespace and simply center the text horizontally. In
+	addition, fonts used to display captions are often proportional
+	width fonts. If the user doesn’t (or cannot) configure the
+	application to use a fixed width font, the way captions are laid out
+	horizontally can be skewed. Information, such as whether the person
+	to the left or right of the video is speaking, can be lost.</P>
+	<LI><P>They usually don’t look like closed
+	captions. Perhaps this isn’t a bad thing, but if you like the look
+	of closed captions, you’ll like the SPUPNG format.</P>
+</UL>
+<H3>Some examples</H3>
+<P>A picture is worth a thousand words. So here are
+some screenshots that show how the same caption in the same scene is
+displayed depending on the ccextractor output format, how an
+application displays the caption, and how the user configures the
+application to display the caption. The scene in question has two
+people engaged in conversation, the caption captures what both people
+are saying, and it is near the beginning of the show, so credits are
+displayed near the bottom of the scene.</P>
+<P><IMG SRC="srt-file.png" ALT="srt-file"></P>
+<P>The above screenshot shows how a SRT formatted
+caption is displayed by VLC using VLC’s default configuration where
+captions are displayed using the Arial font. Both people are talking,
+but can you tell who is saying what? Can you read the credit? Here is
+how the caption is encoded in the .srt file:</P>
+<pre>
+20
+00:02:15,636 --&gt; 00:02:18,770
+                   Wow. How long
+                  did that take?
+About a month.
+
+</pre>
+<P><IMG SRC="spusrt.png" ALT="spusrt"></P>
+<P>The above screenshot shows how the dvdauthor tool,
+spumux, renders the same SRT formatted caption. I’ll explain spumux
+in a later section. Now you can tell who is saying what, but it is
+still hard to read the credit.</P>
+<P><IMG SRC="smi-file.png" ALT="smi-file"></P>
+<P>The above screenshot shows how a SAMI formatted
+caption is displayed by VLC after VLC’s Subtitles/OSD preferences
+have been configured to use a fixed width font, Lucida Console, and
+the “Add a background” option has been checked. Here is how the
+caption is encoded in the .smi file:</P>
+<pre>
+&lt;SYNC start=135636&gt;&lt;P class="UNKNOWNCC"&gt;
+                   Wow. How long&lt;br&gt;
+                  did that take?&lt;br&gt;
+About a month.                  &lt;br&gt;
+&lt;/P&gt;&lt;/SYNC&gt;
+</pre>
+<P>Who is speaking is clear in the .smi file, but not
+when VLC displays the caption. And the credit is even harder to read
+with the “Add a background” option enabled.</P>
+<P><IMG SRC="spusmi.png" ALT="spusmi"></P>
+<P>The above screenshot shows how spumux renders the
+same SAMI formatted caption. In this case, spumux centers the text,
+so who is speaking is lost.</P>
+<P><IMG SRC="spupng.png" ALT="spupng"></P>
+<P>The above screenshot shows how spumux renders the
+SPUPNG formatted caption. It is clear who is saying what, and the
+credit is not obscured by the caption.</P>
+<H2>How to use the SPUPNG output format</H2>
+<P>The SPUPNG format was designed to be used with the
+dvdauthor tool, spumux.  According to the
+<A HREF="http://dvdauthor.sourceforge.net/">dvdauthor home page</A>:
+<q>DVDAuthor is a set of tools to help you author the file
+and directory structure of a DVD-Video disc, including programmatic
+commands for implementing interactive behaviour.</q>
+According to the
+<A HREF="http://dvdauthor.sourceforge.net/doc/r2515.html">spumux man page</A>:
+<q>spumux&nbsp;--&nbsp;generates and multiplexes subtitles
+into an existing mpeg2 program stream</q></P>
+<P>This section describes how to use the SPUPNG
+format to create a very simple DVD-Video that plays one video. The
+procedure assumes a computer with a DVD burner running a Ubuntu
+flavor of Linux with the dvdauthor, ffmpeg (or libav-tools) and
+dvd+rw-tools packages installed. The tools in these packages are
+designed to be used from the command line and the dvdauthor tools are
+driven by XML files. A number of graphical user interface front ends
+for these packages are also available, some of which have been ported
+to Windows, along with the underlying dvdauthor and
+ffmpeg/libav-tools packages. More information can be found at the
+<A HREF="http://dvdauthor.sourceforge.net/">dvdauthor home page</A>.
+I have not used any of the Windows applications, so their
+use is beyond my area of expertise.</P>
+
+<OL>
+
+<LI><H3>Extract closed captions in SPUPNG format</H3>
+<P>
+<code>ccextractor -out=spupng -o spumux.xml source-video-file</code>
+</P>
+<P>This command will create the file, <code>spumux.xml</code>
+and a sub-directory, <code>spumux.d</code>.
+The sub-directory will contain lots of PNG files named <code>sub</code><code><I>NNNN</I></code><code>.png</code>
+where <code><I>NNNN</I></code> is
+the 4 digit number of a closed caption starting at <code>0000</code>.
+For example, the source video file used for the example screenshots,
+was one hour long and generated 1052 PNG files named sub0000.png to
+sub1052.png. Longer videos or videos with roll-up captions will
+generate more PNG files.</P>
+
+<LI><H3>Transcode video to DVD-Video format</H3>
+<P>Different Linux distributions will support either
+the ffmpeg package or the libav-tools package. The ffmpeg/avconv
+programs are complex and require many command line options to get the
+desired result. I maintain a shell script, do-ffmpeg, which I edit as
+needed to select:</P>
+<UL>
+	<LI><P>Cropping options, useful when the source
+	video is letterboxed,</P>
+	<LI><P>Video bit rate (which determines how many
+	hours can fit on a DVD with a tradeoff on quality),</P>
+	<LI><P>Video resolution (the DVD standard allows
+	four different resolutions for NTSC and PAL each, I will usually use
+	the most common, 720x480, but if the source video width is 704, I
+	will use 704x480),</P>
+	<LI><P>Audio codec. I always try to copy the source
+	video audio, but sometimes there is noise in the source that throws
+	audio and video out of sync. In that case, I use options that
+	transcode the audio and help maintain a/v sync.</P>
+	<LI><P>Whether to deinterlace. I usually do.</P>
+	<LI><P>Aspect ratio, either. 16:9 or 4:3.</P>
+</UL>
+<P>Here is the <code>do-ffmpeg</code>
+script for ffmpeg version 0.6:</P>
+<pre>
+#!/bin/bash
+# Transcode video to DVD-Video compatible format.
+# Usage: do-ffmpeg infile outfile
+
+if [ $# != 2 ]
+then
+echo "Usage: do-ffmpeg infile outfile"
+exit 1
+fi
+
+# options of interest (applicable to ffmpeg version 0.6):
+
+# Cropping:
+# If a widescreen video is letterboxed in a 4:3 aspect ratio,
+# you might want to crop the letterboxed format, using the following:
+#crop="-croptop 60 -cropbottom 60"
+# Sometimes you get a 4:3 video that's been letterboxed on the sides, too:
+#crop="-cropleft 4 -cropright 12"
+
+# Bitrate determines the size and quality of the video:
+# 4670k = approx 2 hours of video on a 4.7GB single layer DVD
+# 3200k = approx 3 hours of video on a 4.7GB single layer DVD
+# 2400k = approx 4 hours of video on a 4.7GB single layer DVD
+bitrate=2400k
+
+# Video resolution:
+# Valid values for NTSC DVD-Video are: 720x480 704x480 352x480 352x240
+# Valid values for PAL DVD-Video are: 720x576 704x576 352x576 352x288
+# I usually use 720x480, unless the input is 704x480, then I use 704x480
+size=704x480
+
+# Audio codec
+# If input file's audio is AC-3 or MPEG layer-2, you can usually let
+# ffmpeg copy it, using the following value for $acodec
+acodec="-acodec copy"
+# If the input audio isn't one of the above, or if there is noise in the audio
+# stream that throws audio-video out of sync, the following usually fixes it.
+#acodec="-acodec ac3 -ab 192k -ac 2 -async 1200"
+
+# Whether to deinterlace video:
+deint="-deinterlace"
+
+# Aspect ratio:
+# 16:6 = widescreen
+# 4:3 = fullscreen
+aspect="4:3"
+
+ffmpeg -threads 4 -v 1 -i $1 $crop $deint \
+-r ntsc -target dvd -b $bitrate -s $size \
+$acodec -copyts -aspect $aspect \
+-y $2
+</pre>
+<P>The script will need tweaking if you use a
+distribution that supports libav-tools or a newer version of ffmpeg.
+The cropping options become something like:</P>
+<pre>
+#crop=&quot;-vf crop=in_w*3/4:in_h*3/4,scale=720:480&quot;
+#crop=&quot;-vf crop=in_w:in_h*3/4,scale=720:480&quot;
+</pre>
+<P>The audio codec options become:</P>
+<pre>
+acodec=&quot;-c:a copy&quot;
+#acodec=&quot;-c:a ac3 -b:a 192k -ac 2 -async 1200&quot;
+</pre>
+<P>The command becomes:</P>
+<pre>
+avconv -threads 4 -v debug -i $1 $deint $crop \
+-r ntsc -target ntsc-dvd -b:v $bitrate -s $size -copyts \
+$acodec -aspect $aspect \
+-y $2
+</pre>
+<P>After editing the script, transcode the source video with the
+command:</P>
+<P><code>do-ffmpeg source-video-file transcoded.mpg</code></P>
+
+<LI><H3>Multiplex SPUPNG captions into subtitle stream</H3>
+<P><code>spumux spumux.xml &lt; transcoded.mpg &gt; subtitles.mpg</code></P>
+
+<LI><H3>Create DVD-Video directory structure</H3>
+<P>Dvdauthor requires an XML file as input. Following
+is an extremely simple example that should start playing the
+<code>subtitles.mpg</code> as soon
+as the DVD is loaded in your DVD player. Paste it into a file called
+<code>dvdauthor.xml</code>.</P>
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;dvdauthor&gt;
+    &lt;vmgm /&gt;
+    &lt;titleset&gt;
+        &lt;titles&gt;
+            &lt;video aspect="4:3" format="ntsc" /&gt;
+            &lt;audio format="ac3" lang="en"/&gt;
+            &lt;subpicture lang="en" &gt;
+&lt;!-- doesn't work w/ dvdauthor 0.6.18 despite being documented in man page
+                &lt;stream mode="normal" id="0" content="forced" /&gt;
+--&gt;
+            &lt;/subpicture&gt;
+            &lt;pgc&gt;
+                &lt;vob file="subtitles.mpg" /&gt;
+            &lt;/pgc&gt;
+        &lt;/titles&gt;
+    &lt;/titleset&gt;
+&lt;/dvdauthor&gt;
+</pre>
+<P>If you change the name of the output file,
+<code>subtitles.mpg</code>, in step
+3, be sure to change it in the &lt;vob&gt; element. Create the
+DVD-Video directory structure in a sub-directory called <code>dvd</code> with the command:</P>
+<P><code>dvdauthor -o dvd -x dvdauthor.xml</code></P>
+<P>If you repeat the command, be sure to first delete the <code>dvd</code>
+sub-directory.</P>
+
+<LI><H3>Burn DVD</H3>
+<P>Load a blank DVD into your DVD burner. Then burn
+with this command:</P>
+<P><code>growisofs
+-dvd-video -V 'MyLabel' –Z /dev/dvd dvd</code></P>
+
+<LI><H3>Play DVD</H3>
+<P>The video should start playing as soon as the DVD
+is read by your player. You will need to turn on subtitles using
+whatever mechanism your player supports, perhaps by pressing a
+subtitle key on the remote. Enjoy! 
+</P>
+
+</OL>
+
+</BODY>
+</HTML>
