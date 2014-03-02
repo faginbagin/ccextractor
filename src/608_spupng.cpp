@@ -490,7 +490,7 @@ SpuPng::writePNG(struct eia608_screen* data,
 {
     unsigned int i;
 
-    if (setjmp (png_ptr->jmpbuf))
+    if (setjmp(png_jmpbuf(png_ptr)))
             return 0;
 
     png_init_io (png_ptr, fppng);
