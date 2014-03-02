@@ -617,7 +617,7 @@ int roll_up(struct s_write *wb)
         use_buffer->row_used[j]=0;
     }
     memset(use_buffer->characters[lastrow],' ',CC608_SCREEN_WIDTH);
-    memset(use_buffer->colors[lastrow],COL_WHITE,CC608_SCREEN_WIDTH);
+    memset(use_buffer->colors[lastrow],COL_TRANSPARENT,CC608_SCREEN_WIDTH);
     memset(use_buffer->fonts[lastrow],FONT_REGULAR,CC608_SCREEN_WIDTH);
 
     use_buffer->characters[lastrow][CC608_SCREEN_WIDTH]=0;
